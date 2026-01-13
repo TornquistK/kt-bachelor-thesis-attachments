@@ -50,6 +50,32 @@ function getFunctionNode(node) {
       }
     }
   }
+  // export default function/arrow
+  if (node.type === 'ExportDefaultDeclaration') {
+    if (
+      node.declaration.type === 'FunctionDeclaration' ||
+      node.declaration.type === 'ArrowFunctionExpression' ||
+      node.declaration.type === 'FunctionExpression'
+    ) {
+      return node.declaration;
+    }
+    // export default existingFunction
+  }
+  // module.exports = function
+  if (
+    node.type === 'AssignmentExpression' &&
+    node.left.type === 'MemberExpression' &&
+    node.left.object.name === 'module' &&
+    node.left.property.name === 'exports'
+  ) {
+    if (
+        node.right.type === 'FunctionExpression' ||
+        node.right.type === 'ArrowFunctionExpression'
+    ) {
+        return node.right;
+    }
+  }
+
   return null;
 }
 
