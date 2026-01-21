@@ -1,0 +1,48 @@
+eslint . --config eslint.config.mjs
+
+/Users/kevintornquist/Code/matchmaker/apps/web/src/app/(frontend)/(protected)/profile/@student/actions.ts
+  19:8   error  Server Action "updateStudentVisibilitySettings" modifies data but lacks ownership verification. Ensure users can only modify their own data           nextjs-security/require-server-action-auth
+  19:8   error  Server Action "updateStudentVisibilitySettings" accepts parameter "studentId" but lacks input validation. Validate all user input before processing   nextjs-security/require-input-validation
+  19:8   error  Server Action "updateStudentVisibilitySettings" accepts parameter "visibility" but lacks input validation. Validate all user input before processing  nextjs-security/require-input-validation
+  19:8   error  Server Action "updateStudentVisibilitySettings" accepts parameter "useAvatar" but lacks input validation. Validate all user input before processing   nextjs-security/require-input-validation
+  31:31  error  Parameter "studentId" is used directly in prisma.student.findUnique without validation. This could lead to injection attacks                          nextjs-security/require-input-validation
+  39:9   error  Parameter "studentId" is used directly in prisma.studentProfile.update without validation. This could lead to injection attacks                       nextjs-security/require-input-validation
+  39:9   error  Parameter "visibility" is used directly in prisma.studentProfile.update without validation. This could lead to injection attacks                      nextjs-security/require-input-validation
+  39:9   error  Parameter "useAvatar" is used directly in prisma.studentProfile.update without validation. This could lead to injection attacks                       nextjs-security/require-input-validation
+
+/Users/kevintornquist/Code/matchmaker/apps/web/src/app/(frontend)/(protected)/settings/all/actions.ts
+   7:34  error  Server Action "invalidateSession" modifies data but lacks ownership verification. Ensure users can only modify their own data                          nextjs-security/require-server-action-auth
+   7:34  error  Server Action "invalidateSession" modifies data but lacks ownership verification. Ensure users can only modify their own data                          nextjs-security/require-server-action-auth
+  35:44  error  Server Action "updateUserLanguageIfDefault" modifies data but lacks ownership verification. Ensure users can only modify their own data                nextjs-security/require-server-action-auth
+  35:44  error  Server Action "updateUserLanguageIfDefault" accepts parameter "browserLanguage" but lacks input validation. Validate all user input before processing  nextjs-security/require-input-validation
+  35:44  error  Server Action "updateUserLanguageIfDefault" modifies data but lacks ownership verification. Ensure users can only modify their own data                nextjs-security/require-server-action-auth
+  35:44  error  Server Action "updateUserLanguageIfDefault" accepts parameter "browserLanguage" but lacks input validation. Validate all user input before processing  nextjs-security/require-input-validation
+  43:13  error  Parameter "browserLanguage" is used directly in prisma.user.update without validation. This could lead to injection attacks                            nextjs-security/require-input-validation
+  43:13  error  Parameter "browserLanguage" is used directly in prisma.user.update without validation. This could lead to injection attacks                            nextjs-security/require-input-validation
+  57:23  error  Server Action "action" is missing authentication check. Add session validation before processing requests                                              nextjs-security/require-server-action-auth
+  57:23  error  Server Action "action" accepts parameter "firstName" but lacks input validation. Validate all user input before processing                             nextjs-security/require-input-validation
+  57:23  error  Server Action "action" is missing authentication check. Add session validation before processing requests                                              nextjs-security/require-server-action-auth
+  57:23  error  Server Action "action" accepts parameter "firstName" but lacks input validation. Validate all user input before processing                             nextjs-security/require-input-validation
+  58:9   error  Parameter "firstName" is used directly in prisma.internal.findMany without validation. This could lead to injection attacks                            nextjs-security/require-input-validation
+  58:9   error  Parameter "firstName" is used directly in prisma.internal.findMany without validation. This could lead to injection attacks                            nextjs-security/require-input-validation
+
+/Users/kevintornquist/Code/matchmaker/apps/web/src/app/(frontend)/(protected)/students/[id]/@internal/(studentProfile)/actions.ts
+  22:8   error  Server Action "updateStudentVisibilitySettings" modifies data but lacks ownership verification. Ensure users can only modify their own data           nextjs-security/require-server-action-auth
+  22:8   error  Server Action "updateStudentVisibilitySettings" accepts parameter "studentId" but lacks input validation. Validate all user input before processing   nextjs-security/require-input-validation
+  22:8   error  Server Action "updateStudentVisibilitySettings" accepts parameter "visibility" but lacks input validation. Validate all user input before processing  nextjs-security/require-input-validation
+  22:8   error  Server Action "updateStudentVisibilitySettings" accepts parameter "useAvatar" but lacks input validation. Validate all user input before processing   nextjs-security/require-input-validation
+  25:31  error  Parameter "studentId" is used directly in prisma.student.findUnique without validation. This could lead to injection attacks                          nextjs-security/require-input-validation
+  33:9   error  Parameter "studentId" is used directly in prisma.studentProfile.update without validation. This could lead to injection attacks                       nextjs-security/require-input-validation
+  33:9   error  Parameter "visibility" is used directly in prisma.studentProfile.update without validation. This could lead to injection attacks                      nextjs-security/require-input-validation
+  33:9   error  Parameter "useAvatar" is used directly in prisma.studentProfile.update without validation. This could lead to injection attacks                       nextjs-security/require-input-validation
+
+/Users/kevintornquist/Code/matchmaker/apps/web/src/app/(payload)/layout.tsx
+  17:46  error  Server Action "serverFunction" is missing authentication check. Add session validation before processing requests  nextjs-security/require-server-action-auth
+
+/Users/kevintornquist/Code/matchmaker/apps/web/src/pages/api/sync/companies.ts
+  32:16  error  Server Action "handler" accepts parameter "req" but lacks input validation. Validate all user input before processing    nextjs-security/require-input-validation
+  38:30  error  Parameter "req" is used directly in prisma.internal.findUnique without validation. This could lead to injection attacks  nextjs-security/require-input-validation
+
+✖ 33 problems (33 errors, 0 warnings)
+
+error: script "lint" exited with code 1

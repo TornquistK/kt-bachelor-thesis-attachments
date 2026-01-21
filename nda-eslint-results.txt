@@ -1,0 +1,63 @@
+****/apps/<NDA>/src/app/(protected)/(with-banner)/dashboard/page.client.tsx
+166:7  error  Sensitive property "bankAccounts" is being passed to a Client Component. This data will be exposed to the client bundle  nextjs-security/no-sensitive-data-leak
+
+****/apps/<NDA>/src/app/(protected)/(with-banner)/payments/page.client.tsx
+22:57  error  Sensitive property "bankAccounts" is being passed to a Client Component. This data will be exposed to the client bundle  nextjs-security/no-sensitive-data-leak
+
+****/apps/<NDA>/src/app/(protected)/(with-banner)/pre-payment/page.client.tsx
+120:7  error  Sensitive property "bankAccounts" is being passed to a Client Component. This data will be exposed to the client bundle  nextjs-security/no-sensitive-data-leak
+
+****/apps/<NDA>/src/app/api/revalidate/aem/route.ts
+6:8   error    Server Action "GET" accepts parameter "request" but lacks input validation. Validate all user input before processing                         nextjs-security/require-input-validation
+
+****/apps/<NDA>/src/app/auth/callcenter/actions.ts
+14:8  error  Server Action "callcenterCallback" modifies data but lacks ownership verification. Ensure users can only modify their own data     nextjs-security/require-server-action-auth
+14:8  error  Server Action "callcenterCallback" accepts parameter "data" but lacks input validation. Validate all user input before processing  nextjs-security/require-input-validation
+
+****/apps/<NDA>/src/app/auth/success/route.ts
+25:8  error  Server Action "GET" accepts parameter "request" but lacks input validation. Validate all user input before processing  nextjs-security/require-input-validation
+
+****/apps/<NDA>/src/features/main/ProtectedProvider.tsx
+31:84  error  Property "authToken" might contain sensitive data. Review if this should be passed to a Client Component                   nextjs-security/no-sensitive-data-leak
+47:9   error  Sensitive property "token" is being passed to a Client Component. This data will be exposed to the client bundle           nextjs-security/no-sensitive-data-leak
+50:9   error  Sensitive property "onTokenExpired" is being passed to a Client Component. This data will be exposed to the client bundle  nextjs-security/no-sensitive-data-leak
+
+****/apps/<NDA>/src/features/payments/BankAccount/BankAccountChangeModal.tsx
+27:47  error  Property "bankAccounts" might contain sensitive data. Review if this should be passed to a Client Component  nextjs-security/no-sensitive-data-leak
+
+****/apps/<NDA>/src/features/payments/BankAccount/BankAccountInfos.tsx
+12:36  error  Property "bankAccountDetails" might contain sensitive data. Review if this should be passed to a Client Component  nextjs-security/no-sensitive-data-leak
+
+****/apps/<NDA>/src/features/payments/BankAccount/BankAccounts.tsx
+26:37  error  Property "bankAccounts" might contain sensitive data. Review if this should be passed to a Client Component                    nextjs-security/no-sensitive-data-leak
+82:29  error  Sensitive property "bankAccountDetails" is being passed to a Client Component. This data will be exposed to the client bundle  nextjs-security/no-sensitive-data-leak
+86:31  error  Sensitive property "bankAccountDetails" is being passed to a Client Component. This data will be exposed to the client bundle  nextjs-security/no-sensitive-data-leak
+87:31  error  Sensitive property "bankAccountDetails" is being passed to a Client Component. This data will be exposed to the client bundle  nextjs-security/no-sensitive-data-leak
+91:29  error  Sensitive property "bankAccountDetails" is being passed to a Client Component. This data will be exposed to the client bundle  nextjs-security/no-sensitive-data-leak
+96:33  error  Sensitive property "bankAccountDetails" is being passed to a Client Component. This data will be exposed to the client bundle  nextjs-security/no-sensitive-data-leak
+121:9   error  Sensitive property "bankAccounts" is being passed to a Client Component. This data will be exposed to the client bundle        nextjs-security/no-sensitive-data-leak
+
+****/apps/<NDA>/src/features/payments/PaymentDashboardCard/PaymentDashboardCard.tsx
+35:3  error  Property "bankAccounts" might contain sensitive data. Review if this should be passed to a Client Component  nextjs-security/no-sensitive-data-leak
+
+****/apps/<NDA>/src/features/registration/providers/RegistrationProvider.tsx
+19:7  error  Sensitive property "token" is being passed to a Client Component. This data will be exposed to the client bundle           nextjs-security/no-sensitive-data-leak
+20:7  error  Sensitive property "onTokenExpired" is being passed to a Client Component. This data will be exposed to the client bundle  nextjs-security/no-sensitive-data-leak
+
+****/apps/<NDA>/src/features/session/actions.ts
+10:41  error  Server Action "sessionActionsUpdateCore" is missing authentication check. Add session validation before processing requests       nextjs-security/require-server-action-auth
+10:41  error  Server Action "sessionActionsUpdateCore" is missing authentication check. Add session validation before processing requests       nextjs-security/require-server-action-auth
+14:37  error  Server Action "sessionActionsLogout" performs mutations without any auth checks. This could allow unauthorized data modification  nextjs-security/require-server-action-auth
+14:37  error  Server Action "sessionActionsLogout" performs mutations without any auth checks. This could allow unauthorized data modification  nextjs-security/require-server-action-auth
+
+****/apps/<NDA>/src/app/auth/success/route.ts
+12:8  error  Server Action "GET" accepts parameter "request" but lacks input validation. Validate all user input before processing  nextjs-security/require-input-validation
+
+****/apps/<NDA>/src/features/session/actions.ts
+8:37  error  Server Action "sessionActionsLogout" performs mutations without any auth checks. This could allow unauthorized data modification  nextjs-security/require-server-action-auth
+8:37  error  Server Action "sessionActionsLogout" performs mutations without any auth checks. This could allow unauthorized data modification  nextjs-security/require-server-action-auth
+
+****/apps/<NDA>/src/providers/ProtectedProviders.tsx
+18:48  error  Property "authToken" might contain sensitive data. Review if this should be passed to a Client Component                   nextjs-security/no-sensitive-data-leak
+29:7   error  Sensitive property "token" is being passed to a Client Component. This data will be exposed to the client bundle           nextjs-security/no-sensitive-data-leak
+31:7   error  Sensitive property "onTokenExpired" is being passed to a Client Component. This data will be exposed to the client bundle  nextjs-security/no-sensitive-data-leak

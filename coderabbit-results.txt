@@ -1,0 +1,216 @@
+============================================================================
+File: apps/web/src/app/(frontend)/(protected)/new-cms/page-client.tsx
+Line: 6 to 14
+Type: potential_issue
+
+Comment:
+Verify that CSP headers and frame-ancestors directive are properly configured for iframe embedding.
+
+Embedding the admin panel via iframe requires explicit security configuration to prevent unauthorized framing. Since this is a same-origin iframe, ensure:
+
+- The frame-ancestors CSP directive is set in your Next.js headers (e.g., frame-ancestors 'self') to restrict framing to this origin
+- For legacy browser support, pair this with X-Frame-Options: SAMEORIGIN header
+- Consider adding the sandbox attribute to the iframe for additional security hardening if the admin panel doesn't require unrestricted capabilities
+
+Prompt for AI Agent:
+In apps/web/src/app/(frontend)/(protected)/new-cms/page-client.tsx around lines 6 to 14, the iframe embedding the admin panel lacks accompanying security headers and attributes; update your Next.js headers (e.g., next.config.js or app/server middleware) to include a Content-Security-Policy with a frame-ancestors directive restricting to the same origin (frame-ancestors 'self'), add an X-Frame-Options: SAMEORIGIN header for legacy browsers, and optionally harden the iframe element by adding an appropriate sandbox attribute (or minimal sandbox flags) if the admin UI does not require unrestricted capabilities.
+
+============================================================================
+File: apps/web/src/app/(frontend)/(protected)/agents/[id]/_middleware.ts
+Line: 16 to 18
+Type: potential_issue
+
+Comment:
+Fix redirect URL to include basePath for consistency with pathname check.
+
+Line 16 includes request.nextUrl.basePath in the pathname comparison, but line 17 constructs the redirect URL without it. Next.js does not automatically prepend basePath to redirect targets—it must be included explicitly. If basePath is configured, the redirect will target an incorrect URL.
+
+Either add basePath to the redirect URL, or use the recommended pattern of cloning request.nextUrl which automatically preserves basePath:
+
+
+🔧 Suggested fixes
+
+Option 1: Manually include basePath
+  if (pathname === ${request.nextUrl.basePath}/agents/${id}) {
+-    return NextResponse.redirect(new URL(/agents/${id}/company-dashboard, request.url));
++    return NextResponse.redirect(new URL(${request.nextUrl.basePath}/agents/${id}/company-dashboard, request.url));
+  }
+
+
+Option 2: Use request.nextUrl.clone() (recommended by Next.js docs)
+  if (pathname === ${request.nextUrl.basePath}/agents/${id}) {
++    const url = request.nextUrl.clone();
++    url.pathname = /agents/${id}/company-dashboard;
+-    return NextResponse.redirect(new URL(/agents/${id}/company-dashboard, request.url));
++    return NextResponse.redirect(url);
+  }
+
+Prompt for AI Agent:
+In @apps/web/src/app/(frontend)/(protected)/agents/[id]/_middleware.ts around lines 16 - 18, The redirect target used in NextResponse.redirect does not include request.nextUrl.basePath even though the pathname check includes it; update the redirect to preserve basePath by either constructing the URL with request.nextUrl.basePath added to /agents/${id}/company-dashboard or, preferably, clone and modify request.nextUrl (e.g., use request.nextUrl.clone(), set its pathname to the desired /agents/${id}/company-dashboard and pass that to NextResponse.redirect) so the basePath is retained and the redirect matches the pathname check.
+
+============================================================================
+File: apps/web/src/server/trpc/router/mail/toCompany/sentNoExtPortal.ts
+Line: 12 to 17
+Type: potential_issue
+
+Comment:
+Missing ownership authorization check.
+
+The procedure only verifies group membership (INTERNAL/STUDENT) but does not validate that the authenticated user has permission to send emails for the specified applicationId. A user could potentially trigger emails for applications they don't own by guessing or knowing other application IDs.
+
+Consider adding an ownership check before invoking the workflow, e.g., verify that input.applicationId belongs to the authenticated user (available via ctx.user or similar).
+
+
+============================================================================
+File: apps/web/src/server/trpc/router/match/update.ts
+Line: 17 to 18
+Type: potential_issue
+
+Comment:
+Address missing permission checks before merging.
+
+The TODO indicates permission checks are incomplete. Without proper authorization logic, users could potentially update matches they shouldn't have access to. Consider implementing checks to verify the user has appropriate access to the specific match being updated.
+
+Prompt for AI Agent:
+In @apps/web/src/server/trpc/router/match/update.ts around lines 17 - 18, Add an authorization guard at the start of the .mutation handler in update.ts: use ctx (e.g., ctx.user or ctx.session) and input.matchId to load the match (via ctx.prisma.match.findUnique or an existing getMatchById helper) and verify the current user has permission (owner, organizer, or team membership) to modify that match; if the check fails throw a TRPCError('FORBIDDEN') and only proceed to the merge/update logic when authorized.
+
+
+============================================================================
+File: apps/web/src/server/trpc/router/internal/getById.ts
+Line: 6 to 18
+Type: potential_issue
+
+Comment:
+Verify authorization scope - potential IDOR vulnerability.
+
+This endpoint allows any user in AGENT, INTERNAL, or STUDENT groups to fetch any internal record by ID. If users should only access their own records or specific authorized records, this creates an Insecure Direct Object Reference (IDOR) vulnerability.
+
+Consider adding ownership or permission checks:
+
+  .query(({ ctx, input }) => {
+-   return ctx.prisma.internal.findUniqueOrThrow({
++   return ctx.prisma.internal.findUniqueOrThrow({
+      where: {
+        id: input.id,
++       // Add ownership check if applicable, e.g.:
++       // userId: ctx.session.user.id,
+      },
+      include: {
+        internalProfile: true,
+        files: true,
+      },
+    });
+  });
+
+
+Additionally, consider adding stricter ID format validation if using UUIDs or CUIDs:
+
+- .input(z.object({ id: z.string() }))
++ .input(z.object({ id: z.string().uuid() })) // or .cuid() based on your ID format
+
+
+============================================================================
+File: apps/web/src/server/trpc/router/company/getById.ts
+Line: 23 to 26
+Type: potential_issue
+
+Comment:
+Critical bug: Query uses input.id instead of validated id variable.
+
+The access control logic on lines 14-21 carefully computes the id variable (defaulting to the agent's company ID or validating the provided ID), but the query on line 25 uses input.id directly, bypassing all authorization logic.
+
+For agents calling without an id:
+1. id is correctly set to their company ID (line 18)
+2. Query uses input.id which is undefined
+3. Query fails to find any company, returning NOT_FOUND
+
+
+
+
+🐛 Proposed fix
+
+     const company = await ctx.prisma.company.findUnique({
+       where: {
+-        id: input.id,
++        id,
+       },
+       include: {
+
+Prompt for AI Agent:
+In @apps/web/src/server/trpc/router/company/getById.ts around lines 23 - 26, The prisma query in ctx.prisma.company.findUnique is using input.id directly, bypassing the validated/normalized id variable computed earlier (which handles agent defaults and authorization); change the query to use the local id variable instead of input.id so that the access-control result is respected (i.e., replace references to input.id with id when calling ctx.prisma.company.findUnique and any subsequent lookups in the getById handler).
+
+
+
+============================================================================
+File: apps/web/src/server/trpc/router/application/getById.ts
+Line: 26
+Type: potential_issue
+
+Comment:
+Potential data exposure: fetching all applications for the vacancy.
+
+Including applications: true fetches all applications for this vacancy, which may expose sensitive information about other applicants (e.g., student emails, application statuses) to agents or internal users. Consider whether this data is actually needed, or if it should be filtered/removed before returning.
+
+Prompt for AI Agent:
+In @apps/web/src/server/trpc/router/application/getById.ts at line 26, The query in getById (the vacancy fetch that includes applications: true) returns all related applications which can leak sensitive applicant data; either remove applications: true from the select/include, or replace it with a filtered selection that only returns non-sensitive fields (e.g., application IDs or counts) and/or apply authorization checks before including applications; locate the include/select for applications in the getById resolver (file getById.ts) and change it to a minimal projection or remove it entirely, or map/filter the applications to strip emails/statuses before returning.
+
+============================================================================
+File: apps/web/src/server/trpc/router/file/index.ts
+Line: 77 to 113
+Type: potential_issue
+
+Comment:
+Missing authorization check for agents.
+
+The delete procedure is accessible to GROUP.AGENT but lacks the authorization check present in getFile. An agent can currently delete files for any contactId, which is a security vulnerability.
+
+Consider adding the same agent authorization check as in getFile:
+
+
+
+
+🔒 Proposed fix to add agent authorization
+
+      if (ctx.session.user.isStudent) {
+        const student = await ctx.prisma.student.findUnique({
+          where: {
+            email: ctx.session.user.email,
+          },
+        });
+        if (student?.id !== input.contactId) {
+          throw new TRPCError({ code: 'FORBIDDEN' });
+        }
+      }
++
++     if (ctx.session.user.isAgent) {
++       const agent = await ctx.prisma.agent.findUnique({
++         where: {
++           email: ctx.session.user.email,
++         },
++         select: {
++           company: { select: { id: true } },
++         },
++       });
++       if (!agent?.company?.id) {
++         throw new TRPCError({ code: 'FORBIDDEN' });
++       }
++       const hasApplication = await ctx.prisma.application.findFirst({
++         where: {
++           student: {
++             id: input.contactId,
++           },
++           vacancy: {
++             companyId: agent.company.id,
++           },
++         },
++       });
++       if (!hasApplication) {
++         throw new TRPCError({ code: 'FORBIDDEN' });
++       }
++     }
++
+      const deletedFile = await ctx.prisma.file.deleteMany({
+
+Prompt for AI Agent:
+In @apps/web/src/server/trpc/router/file/index.ts around lines 77 - 113, Add the same agent authorization check used in getFile to the delete procedure: when ctx.session.user.isAgent is true, fetch the agent record (e.g., via ctx.prisma.agent.findUnique where email = ctx.session.user.email) and verify agent?.contactId === input.contactId, otherwise throw new TRPCError({ code: 'FORBIDDEN' }); keep the existing student check and then proceed to call ctx.prisma.file.deleteMany as before.
+
